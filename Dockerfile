@@ -13,7 +13,7 @@ RUN npm install
 # Reuslt size around 250-300Mb, that 5 times better than original image size with node:18
 FROM node:18.19.0-buster-slim as final
 
-COPY --from=base /opt/temp_install/node_modules /opt/frontend/
+COPY --from=base /opt/temp_install/node_modules /opt/frontend/node_modules
 
 COPY package.json /opt/frontend/package.json
 
@@ -23,6 +23,8 @@ WORKDIR /opt/frontend/
 
 # Assign environment variable for port defenition or use default 4000
 EXPOSE ${PORT:-4000}
+
+RUN [ "ls", "-lah", "/opt/frontend/" ]
 
 CMD [ "node", "index.js" ]
 
