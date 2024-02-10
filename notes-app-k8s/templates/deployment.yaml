@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "notes-app-k8s.fullname" . }}
+  labels:
+    {{- include "notes-app-k8s.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "notes-app-k8s.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "notes-app-k8s.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "notes-app-k8s.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{.Values.notes.image.name }}:{{.Values.notes.image.tag }}
+          env:
+            - name: PORT
+              value: {{ .Values.notes.port | quote }}
+
+              # Use mongodb env like mongodb://mongodb:27017/notesdb
+            - name: MONGODB_URI
+              value: mongodb://{{ .Values.fullnameOverride }}-{{ .Values.mongo.service.nameOverride }}/{{ .Values.mongo.auth.database }}
+
+            - name: NODE_ENV
+              value: {{.Values.notes.nodejs.argument | quote }}
+
+          imagePullPolicy: {{ .Values.notes.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.notes.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
