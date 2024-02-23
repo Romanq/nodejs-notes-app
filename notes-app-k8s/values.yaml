@@ -4,29 +4,32 @@
 
 notes:
   image:
+    #Change to local image if needed
     name: romanq/notes-app
     tag: 1
     pullPolicy: IfNotPresent
+  servicename: notes-app
+  # Internal service port to access with port-forward
   port: 8000
   nodePort: 32500
+  # Some args if needed to nodejs
   nodejs:
     argument: ""
 
-mongo:
-  service:
-    nameOverride: mongodb
+mongodb:
   fullnameOverride: mongodb
   auth:
-    database: notesdb
+    enabled: false
+    
   persistence:
     enabled: true
-    # PVC Name
-    name: "datadir-custom"
+    # PV Name
+    name: datadir-custom
     size: 1Gi
   useStatefulSet: true
 
-# Overriding name
-fullnameOverride: "notes-app-k8s"
+# Overriding name by default
+fullnameOverride: notes-app-k8s
 
 replicaCount: 1
 

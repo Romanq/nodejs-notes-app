@@ -30,22 +30,28 @@ This app needs the following environment Variables
 - `PORT` the server http port for the application
 - `NODE_ENV` node environment
 
-### docker-compose
-
-The most easy way to install the entire project is using docker-compose:
-
-```shell
-git clone https://github.com/FaztTech/nodejs-notes-app
-cd nodejs-notes-app
-docker-compose up
-```
-
 ### Default User
 
 when the app is lauched, this will create an Admin user with the following credentials:
 
 - email: `admin@localhost`
 - password: `adminpassword`
+
+## CI/CD Parts
+### Install on k8s cluster (k3s, minikube etc.)
+```bash
+git clone git@github.com:Romanq/nodejs-notes-app.git
+cd nodejs-notes-app
+
+helm install --namespace notes-app \
+--atomic \
+--wait \
+notes-app \
+notes-app-k8s/
+```
+
+After install you can access it with your `nodeip:32500`
+
 
 ### Tutorial
 
