@@ -35,8 +35,11 @@ spec:
               value: {{ .Values.notes.port | quote }}
 
               # Use mongodb env like mongodb://mongodb:27017/notesdb
+              {{ $uname := (first .Values.mongodb.auth.usernames) }}
+              {{ $dbname := (first .Values.mongodb.auth.databases) }}
+
             - name: MONGODB_URI
-              value: mongodb://{{ .Values.fullnameOverride }}-{{ .Values.mongo.service.nameOverride }}/{{ .Values.mongo.auth.database }}
+              value: {{ printf "mongodb://mongodb/notes" }}
 
             - name: NODE_ENV
               value: {{.Values.notes.nodejs.argument | quote }}
