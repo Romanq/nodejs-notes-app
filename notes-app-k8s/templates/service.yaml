@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "notes-app-k8s.fullname" . }}
+  labels:
+    {{- include "notes-app-k8s.labels" . | nindent 4 }}
+spec:
+  {{ if .Values.notes.nodePort }}
+  type: NodePort
+  {{ else }}
+  type: {{ .Values.service.type }}
+  {{ end }}
+  ports:
+    - port: {{ .Values.notes.port }}
+      targetPort: {{ .Values.notes.port }}
+      protocol: TCP
+      name: http
+      
+      {{ if .Values.notes.nodePort }}
+      nodePort: {{ .Values.notes.nodePort }}
+      {{- end }}
+      
+      
+
+  selector:
+    {{- include "notes-app-k8s.selectorLabels" . | nindent 4 }}
